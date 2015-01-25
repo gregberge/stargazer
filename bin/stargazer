@@ -1,0 +1,132 @@
+#!/usr/bin/env node
+
+var github = require('octonode');
+var queue = require('queue');
+var path = require('path');
+var program = require('commander');
+var pkg = require(path.join(__dirname, '../package.json'));
+
+program.version(pkg.version);
+
+program.command('extract <repository>')
+  .description('Extract stargazers')
+  .action(extract);
+
+program.command('emails <file>')
+  .description('Get list of emails')
+  .action(email);
+
+program.parse(process.argv);
+
+if (!program.args.length)
+  program.help();
+
+/**
+ * Extract stargazers of a repository to a file.
+ *
+ * @param {string} repository
+ * @param {string} file
+ */
+
+function extract(repository) {
+  var q = queue();
+  var users = [];
+
+  var client = github.client(process.env.STARGAZER_ACCESS_TOKEN);
+  var ghrepo = client.repo(repository);
+
+  queueStargazer(ghrepo, 1);
+
+  q.start(function (err) {
+    if (err)
+      throw err;
+
+    console.log(JSON.stringify(users));
+  });
+
+  /**
+   * Queue stargazer.
+   *
+   * @param {object} ghrepo
+   * @param {number} page
+   */
+
+  function queueStargazer(ghrepo, page) {
+    q.push(function (cb) {
+      ghrepo.stargazers(page, function (err, res, headers) {
+        if (err) return cb(err);
+
+        var links = parseLink(headers.link);
+
+        if (links.next)
+          queueStargazer(ghrepo, links.next);
+
+        res.forEach(function (stargazer) {
+          queueUser(client.user(stargazer.login));
+        });
+
+        cb();
+      });
+    });
+  }
+
+  /**
+   * Queue user.
+   *
+   * @param {object} ghuser
+   */
+
+  function queueUser(ghuser) {
+    q.push(function (cb) {
+      ghuser.info(function (err, res) {
+        if (err) return cb(err);
+        users.push(res);
+        cb();
+      });
+    });
+  }
+}
+
+/**
+ * Email command.
+ *
+ * @param {string} file
+ */
+
+function email(file) {
+  var users = require(path.join(process.cwd(), file));
+
+  var emails = users
+  .filter(function (user) {
+    return user.email;
+  })
+  .map(function (user) {
+    return user.email;
+  });
+
+  console.log(emails.join('\n'));
+}
+
+/**
+ * Parse link header.
+ *
+ * @param {string} header Header
+ * @returns {object} links
+ */
+
+function parseLink(header) {
+  if (!header) return {};
+
+  var regexp = 'page=(\\d+)[^\\s]*>; rel="([^"]*)"';
+  var globalRegexp = new RegExp(regexp, 'g');
+  var nonGlobalRegexp = new RegExp(regexp);
+  var lines = header.match(globalRegexp);
+
+  if (!lines) return {};
+
+  return lines.reduce(function (links, link) {
+    var matches = link.match(nonGlobalRegexp);
+    links[matches[2]] = +matches[1];
+    return links;
+  }, {});
+}
