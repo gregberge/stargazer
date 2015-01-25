@@ -1,6 +1,6 @@
 {
   "name": "stargazer",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Command line to know more about your GitHub repository stargazers.",
   "main": "index.js",
   "scripts": {
