@@ -13,6 +13,14 @@ npm install stargazer
 
 ## Usage
 
+```sh
+$ stargazer extract neoziro/stargazer > users.json
+$ stargazer emails users.json
+frank@gmail.com
+marko@hotmail.com
+james@yahoo.fr
+```
+
 ```
   Usage: stargazer [options] [command]
 
@@ -28,10 +36,13 @@ npm install stargazer
     -V, --version  output the version number
 ```
 
+## Rate limit
+
 To extend the rate limit of GitHub API, you can provide a GitHub access token in the environment variable "STARGAZER_ACCESS_TOKEN".
 
-```
-STARGAZER_ACCESS_TOKEN=81a708fdf2ed3085a503e354c9a9df8d7bcecbb4 stargazer extract neoziro/stargazer
+```sh
+export STARGAZER_ACCESS_TOKEN=81a708fdf2ed3085a503e354c9a9df8d7bcecbb4 
+stargazer extract neoziro/stargazer
 ```
 
 ## License
