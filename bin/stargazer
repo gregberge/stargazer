@@ -12,7 +12,7 @@ program.command('extract <repository>')
   .description('Extract stargazers')
   .action(extract);
 
-program.command('emails <file>')
+program.command('emails [file]')
   .description('Get list of emails')
   .action(email);
 
@@ -94,17 +94,43 @@ function extract(repository) {
  */
 
 function email(file) {
-  var users = require(path.join(process.cwd(), file));
+  readUsers(file, function (err, users) {
+    var emails = users
+    .filter(function (user) {
+      return user.email;
+    })
+    .map(function (user) {
+      return user.email;
+    });
 
-  var emails = users
-  .filter(function (user) {
-    return user.email;
-  })
-  .map(function (user) {
-    return user.email;
+    console.log(emails.join('\n'));
+  });
+}
+
+/**
+ * Read input.
+ *
+ * @param {string} file
+ * @param {function} cb
+ */
+
+function readUsers(file, cb) {
+  if (file)
+    return cb(null, require(path.join(process.cwd(), file)));
+
+  var data = '';
+
+  process.stdin.on('data', function (chunk) {
+    data += chunk;
   });
 
-  console.log(emails.join('\n'));
+  process.stdin.on('end', function () {
+    try {
+      cb(null, JSON.parse(data));
+    } catch (e) {
+      cb(e);
+    }
+  });
 }
 
 /**

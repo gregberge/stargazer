@@ -14,8 +14,7 @@ npm install stargazer
 ## Usage
 
 ```sh
-$ stargazer extract neoziro/stargazer > users.json
-$ stargazer emails users.json
+$ stargazer extract neoziro/stargazer | stargazer emails
 frank@gmail.com
 marko@hotmail.com
 james@yahoo.fr
@@ -28,7 +27,7 @@ james@yahoo.fr
   Commands:
 
     extract <repository>  Extract stargazers
-    emails <file>         Get list of emails
+    emails [file]         Get list of emails
 
   Options:
 
