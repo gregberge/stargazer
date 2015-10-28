@@ -97,10 +97,10 @@ function email(file) {
   readUsers(file, function (err, users) {
     var emails = users
     .filter(function (user) {
-      return user.email;
+      return user.email || user.html_url;
     })
     .map(function (user) {
-      return user.email;
+      return user.email || user.html_url;
     });
 
     console.log(emails.join('\n'));

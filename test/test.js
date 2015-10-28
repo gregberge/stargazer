@@ -20,7 +20,7 @@ describe('Stargazer', function () {
       this.timeout(5000);
       exec('./bin/stargazer emails test/users.json', function (err, stdout) {
         if (err) return done(err);
-        expect(stdout).to.equal('user2@mail.com\nuser3@mail.com\n');
+        expect(stdout).to.equal('https://github.com/user1\nuser2@mail.com\nuser3@mail.com\n');
         done();
       });
     });
