@@ -1,1 +1,1 @@
-[{"login":"user1","email":""},{"login":"user2","email":"user2@mail.com"},{"login":"user3","email":"user3@mail.com"}]
+[{"login":"user1","email":"","html_url":"https://github.com/user1"},{"login":"user2","email":"user2@mail.com","html_url":"https://github.com/user2"},{"login":"user3","email":"user3@mail.com","html_url":"https://github.com/user3"}]
